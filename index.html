@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Creator Runner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="selection-screen" class="screen">
+        <h1 class="menu-title">Select Your Creator</h1>
+        <div class="carousel-container">
+            <button class="nav-btn left-btn" onclick="moveCarousel(-1)">&#10094;</button>
+            <div class="carousel-track" id="carousel-track">
+                </div>
+            <button class="nav-btn right-btn" onclick="moveCarousel(1)">&#10095;</button>
+        </div>
+        <button id="select-confirm-btn" class="action-btn" onclick="confirmSelection()">Select Character</button>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <div id="hud">
+            <div class="hud-item">Score: <span id="score-val">0</span></div>
+            <div class="hud-item">Speed: <span id="speed-val">1.0x</span></div>
+            <div class="hud-item">Coins: <span id="coins-val">0</span></div>
+            <div class="hud-item">Best: <span id="best-val">0</span></div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+    </div>
+
+    <div id="gameover-screen" class="screen hidden">
+        <h1 class="gameover-title">Game Over</h1>
+        <div class="stats-container">
+            <p>Final Score: <span id="final-score">0</span></p>
+            <p>Total Coins: <span id="final-coins">0</span></p>
+        </div>
+        <div class="button-group">
+            <button class="action-btn" onclick="restartGame()">Play Again</button>
+            <button class="action-btn secondary-btn" onclick="showCharacterSelection()">Change Character</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+body {
+    background: #121214;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.screen {
+    position: relative;
+    width: 800px;
+    height: 400px;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden { display: none !important; }
+
+/* HUD STYLE */
+#hud {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 10;
+}
+.hud-item {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+    font-weight: bold;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* CAROUSEL / PS5 MENU */
+.menu-title { margin-bottom: 20px; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px;}
+.carousel-container {
+    display: flex;
+    align-items: center;
+    width: 90%;
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+}
+.carousel-track {
+    display: flex;
+    align-items: center;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    padding-left: 350px; /* Centers the first card */
+}
+.character-card {
+    min-width: 140px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 15px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0.4;
+    transform: scale(0.85);
+    border: 2px solid transparent;
+    position: relative;
+}
+.character-card.active {
+    opacity: 1;
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #00ffcc;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+}
+.character-card img { 
+    height: 90px; 
+    object-fit: contain; 
+    margin-bottom: 10px; 
+}
+.character-card .name { font-weight: bold; font-size: 1.1rem; }
+.character-card .status { font-size: 0.8rem; color: #aaa; margin-top: 4px; }
+
+.nav-btn {
+    background: rgba(0,0,0,0.6); border: none; color: white; padding: 12px;
+    cursor: pointer; border-radius: 50%; z-index: 5; position: absolute;
+}
+.left-btn { left: 10px; } .right-btn { right: 10px; }
+
+.action-btn {
+    margin-top: 20px; padding: 12px 36px; font-size: 1.1rem; font-weight: bold;
+    background: #00ffcc; color: #121214; border: none; border-radius: 30px;
+    cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,255,204,0.3);
+}
+.action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,255,204,0.5); }
+.secondary-btn { background: #555; color: white; margin-left: 10px; box-shadow: none; }
+.secondary-btn:hover { background: #666; box-shadow: none; }
+
+/* CANVAS RESPONSIVENESS CONTAINER */
+canvas { background: transparent; display: block; }
