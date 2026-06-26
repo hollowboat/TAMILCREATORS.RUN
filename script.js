@@ -3,7 +3,7 @@ const CREATORS = [
     { id: 'cmsir', name: 'CMSir', cost: 30 },
     { id: 'pcdoc', name: 'PCDoc', cost: 30 },
     { id: 'asro', name: 'Asro', cost: 30 },
-    { id: 'kablian', name: 'Kablian', cost: 30 },
+    { id: 'kabilan', name: 'Kabilan', cost: 30 },
     { id: 'stalin', name: 'Stalin', cost: 30 },
     { id: 'd7trixx', name: 'D7Trixx', cost: 30 },
     { id: 'rajini', name: 'Rajini', cost: 30 }
