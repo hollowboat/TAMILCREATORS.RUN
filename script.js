@@ -1,0 +1,391 @@
+// Game Configuration & Asset Maps
+const CREATORS = [
+    { id: 'goofy', name: 'Goofy', cost: 30 },
+    { id: 'cmsir', name: 'CMSir', cost: 30 },
+    { id: 'pcdoc', name: 'PCDoc', cost: 30 },
+    { id: 'asro', name: 'Asro', cost: 30 },
+    { id: 'kablian', name: 'Kablian', cost: 30 },
+    { id: 'stalin', name: 'Stalin', cost: 30 },
+    { id: 'd7trixx', name: 'D7Trixx', cost: 30 },
+    { id: 'rajini', name: 'Rajini', cost: 30 }
+];
+
+// RE-ENGINEERED HITBOX BOUNDS: Trimmed transparent spacing blocks
+const OBSTACLE_TYPES = [
+    { id: 'washingmachine', width: 65, height: 65, paddingX: 4, paddingY: 2 },
+    { id: 'printer', width: 85, height: 85, paddingX: 18, paddingY: 16 },       
+    { id: 'dustbin', width: 65, height: 65, paddingX: 6, paddingY: 2 },
+    { id: 'plasticchair', width: 85, height: 85, paddingX: 16, paddingY: 14 },  
+    { id: 'gascylinder', width: 85, height: 85, paddingX: 20, paddingY: 10 }    
+];
+
+let gameState = {
+    coins: 0,
+    bestScore: 0,
+    unlocked: ['goofy'], 
+    selected: 'goofy',
+    isFirstLaunch: true
+};
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let animationFrameId;
+let spawnTimerId; 
+let isPlaying = false;
+let isPaused = false;
+
+let score = 0;
+let coinsEarnedThisRun = 0;
+let currentSpeedMultiplier = 1;
+
+let baseSpeed = 4.0; 
+const TARGET_GROUND_Y = 350; // Standard ground line coordinate across all formats
+
+let player = { 
+    x: 80, 
+    y: TARGET_GROUND_Y - 110, 
+    width: 65, 
+    height: 110, 
+    vy: 0, 
+    gravity: 0.22,       
+    jumpForce: -8.2,     
+    isJumping: false 
+};
+
+let obstacles = [];
+let bgX = 0;
+let currentCarouselIndex = 0;
+
+let bgMusic = new Audio('sounds/background.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+
+const images = {};
+function preloadAssets() {
+    images['background'] = new Image(); images['background'].src = 'images/background.png';
+    OBSTACLE_TYPES.forEach(obs => {
+        images[obs.id] = new Image(); images[obs.id].src = `images/${obs.id}.png`;
+    });
+    CREATORS.forEach(c => {
+        images[`${c.id}_standing`] = new Image(); images[`${c.id}_standing`].src = `images/${c.id}standing.png`;
+        images[`${c.id}_jumping`] = new Image(); images[`${c.id}_jumping`].src = `images/${c.id}jumping.png`;
+    });
+}
+
+function loadGameData() {
+    const saved = localStorage.getItem('tamil_creator_runner_save');
+    if (saved) {
+        gameState = JSON.parse(saved);
+    }
+    updateHUD();
+}
+
+function saveGameData() {
+    localStorage.setItem('tamil_creator_runner_save', JSON.stringify(gameState));
+}
+
+function resizeCanvas() {
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+}
+
+window.onload = () => {
+    preloadAssets();
+    loadGameData();
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    if (gameState.isFirstLaunch) {
+        gameState.unlocked = CREATORS.map(c => c.id); 
+    }
+    renderCarousel();
+};
+
+function renderCarousel() {
+    const track = document.getElementById('carousel-track');
+    if (!track) return;
+    track.innerHTML = '';
+    
+    CREATORS.forEach((c, index) => {
+        const isUnlocked = gameState.isFirstLaunch || gameState.unlocked.includes(c.id);
+        const isActive = index === currentCarouselIndex;
+        const card = document.createElement('div');
+        card.className = `character-card ${isActive ? 'active' : ''}`;
+        
+        card.innerHTML = `
+            <img src="images/${c.id}standing.png" alt="${c.name}">
+            <div class="name">${c.name}</div>
+            <div class="status">${isUnlocked ? (gameState.selected === c.id && !gameState.isFirstLaunch ? 'Selected' : 'Available') : `🔒 ${c.cost} Coins`}</div>
+        `;
+        track.appendChild(card);
+    });
+    
+    const cardWidth = 170; 
+    track.style.transform = `translateX(-${currentCarouselIndex * cardWidth}px)`;
+    
+    const activeChar = CREATORS[currentCarouselIndex];
+    const confirmBtn = document.getElementById('select-confirm-btn');
+    
+    if (gameState.isFirstLaunch || gameState.unlocked.includes(activeChar.id)) {
+        confirmBtn.innerText = gameState.isFirstLaunch ? "Claim Free Character & Run" : "Select & Run";
+        confirmBtn.style.background = "#00ffcc";
+    } else {
+        confirmBtn.innerText = `Unlock for ${activeChar.cost} Coins`;
+        confirmBtn.style.background = "#ffcc00";
+    }
+}
+
+function moveCarousel(direction) {
+    currentCarouselIndex = (currentCarouselIndex + direction + CREATORS.length) % CREATORS.length;
+    renderCarousel();
+}
+
+function confirmSelection() {
+    const selectedChar = CREATORS[currentCarouselIndex];
+    
+    if (gameState.isFirstLaunch) {
+        gameState.unlocked = [selectedChar.id];
+        gameState.selected = selectedChar.id;
+        gameState.isFirstLaunch = false;
+        saveGameData();
+        startGame();
+    } else if (gameState.unlocked.includes(selectedChar.id)) {
+        gameState.selected = selectedChar.id;
+        saveGameData();
+        startGame();
+    } else {
+        if (gameState.coins >= selectedChar.cost) {
+            gameState.coins -= selectedChar.cost;
+            gameState.unlocked.push(selectedChar.id);
+            gameState.selected = selectedChar.id;
+            saveGameData();
+            renderCarousel();
+            updateHUD();
+        } else {
+            alert("Not enough coins!");
+        }
+    }
+}
+
+function startGame() {
+    // 1. Instantly halt and clear all lingering obstacle spawn timers
+    clearTimeout(spawnTimerId);
+    
+    // 2. Clear old run array objects to avoid spawning on top of an old asset
+    obstacles = [];
+
+    document.getElementById('selection-screen').classList.add('hidden');
+    document.getElementById('gameover-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    document.getElementById('pause-menu').classList.add('hidden');
+    
+    // 3. Force screen boundaries computation loop
+    resizeCanvas();
+    
+    score = 0;
+    coinsEarnedThisRun = 0;
+    currentSpeedMultiplier = 1;
+    
+    // 4. FIX: Position player completely safely on top of floor line AFTER resizing
+    player.y = TARGET_GROUND_Y - player.height; 
+    player.vy = 0;
+    player.isJumping = false;
+    
+    isPlaying = true;
+    isPaused = false;
+    
+    updateHUD();
+    
+    // Delay initial obstacle spawn by 1.5s to let screen settle cleanly
+    spawnTimerId = setTimeout(spawnObstacle, 1500);
+    
+    bgMusic.currentTime = 0;
+    bgMusic.play().catch(e => console.log("Audio awaiting gesture interaction"));
+
+    window.addEventListener('keydown', handleInput);
+    window.addEventListener('touchstart', handleInput, { passive: false });
+    
+    gameLoop();
+}
+
+function handleInput(e) {
+    if (isPaused) return;
+    if (e.type === 'touchstart') {
+        if (e.target.id === 'pause-btn' || e.target.closest('#pause-menu')) return;
+        e.preventDefault(); 
+    }
+    
+    if ((e.code === 'Space' || e.type === 'touchstart') && !player.isJumping) {
+        player.vy = player.jumpForce;
+        player.isJumping = true;
+    }
+}
+
+function togglePause() {
+    if (!isPlaying) return;
+    isPaused = !isPaused;
+    const menu = document.getElementById('pause-menu');
+    
+    if (isPaused) {
+        menu.classList.remove('hidden');
+        bgMusic.pause();
+        clearTimeout(spawnTimerId);
+    } else {
+        menu.classList.add('hidden');
+        bgMusic.play().catch(e => {});
+        let nextSpawnTime = Math.random() * 2000 + (1600 / currentSpeedMultiplier);
+        spawnTimerId = setTimeout(spawnObstacle, nextSpawnTime);
+        gameLoop();
+    }
+}
+
+function changeBaseSpeed(val) {
+    baseSpeed = parseFloat(val);
+    document.getElementById('slider-val').innerText = baseSpeed.toFixed(1);
+    updateHUD();
+}
+
+function spawnObstacle() {
+    if (!isPlaying || isPaused) return;
+    const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+    obstacles.push({
+        x: canvas.width + 100,
+        y: TARGET_GROUND_Y - type.height, // Sets perfect floor alignment metrics
+        width: type.width,
+        height: type.height,
+        id: type.id,
+        paddingX: type.paddingX,
+        paddingY: type.paddingY,
+        passed: false
+    });
+    
+    let nextSpawnTime = Math.random() * 2000 + (1600 / currentSpeedMultiplier);
+    spawnTimerId = setTimeout(spawnObstacle, nextSpawnTime);
+}
+
+function gameLoop() {
+    if (!isPlaying || isPaused) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    let nativeResolutionScaleFactor = canvas.width / 800;
+    let currentSpeed = baseSpeed * currentSpeedMultiplier * nativeResolutionScaleFactor;
+
+    // Scrolling background layers
+    bgX -= currentSpeed * 0.5; 
+    if (bgX <= -canvas.width) bgX = 0;
+    if (images['background']) {
+        ctx.drawImage(images['background'], bgX, 0, canvas.width, canvas.height);
+        ctx.drawImage(images['background'], bgX + canvas.width, 0, canvas.width, canvas.height);
+    }
+
+    // Gravity mechanics loops
+    player.vy += player.gravity * nativeResolutionScaleFactor;
+    player.y += player.vy;
+    
+    let floorLimit = TARGET_GROUND_Y - player.height;
+    if (player.y >= floorLimit) {
+        player.y = floorLimit;
+        player.vy = 0;
+        player.isJumping = false;
+    }
+
+    let activePlayerSprite = player.isJumping ? `${gameState.selected}_jumping` : `${gameState.selected}_standing`;
+    if (images[activePlayerSprite]) {
+        ctx.drawImage(images[activePlayerSprite], player.x, player.y, player.width, player.height);
+    }
+
+    // Render & Process Obstacles
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obs = obstacles[i];
+        obs.x -= currentSpeed;
+
+        if (images[obs.id]) {
+            ctx.drawImage(images[obs.id], obs.x, obs.y, obs.width, obs.height);
+        }
+
+        // Hitbox evaluations trimmings
+        let playerHitboxLeft = player.x + 12;
+        let playerHitboxRight = player.x + player.width - 12;
+        let playerHitboxTop = player.y + 10;
+        let playerHitboxBottom = player.y + player.height;
+
+        let obsHitboxLeft = obs.x + obs.paddingX;
+        let obsHitboxRight = obs.x + obs.width - obs.paddingX;
+        let obsHitboxTop = obs.y + obs.paddingY;
+        let obsHitboxBottom = obs.y + obs.height;
+
+        if (
+            playerHitboxLeft < obsHitboxRight &&
+            playerHitboxRight > obsHitboxLeft &&
+            playerHitboxTop < obsHitboxBottom &&
+            playerHitboxBottom > obsHitboxTop
+        ) {
+            handleGameOver();
+            return;
+        }
+
+        if (obs.x + obs.width < player.x && !obs.passed) {
+            obs.passed = true;
+            score++;
+            coinsEarnedThisRun++;
+            gameState.coins += 1; 
+            adjustDifficulty();
+            updateHUD();
+        }
+
+        if (obs.x + obs.width < 0) {
+            obstacles.splice(i, 1);
+        }
+    }
+
+    animationFrameId = requestAnimationFrame(gameLoop);
+}
+
+function adjustDifficulty() {
+    if (score >= 200) currentSpeedMultiplier = 10; 
+    else if (score >= 100) currentSpeedMultiplier = 6 + ((score - 100) * (4 / 100));
+    else if (score >= 50) currentSpeedMultiplier = 3 + ((score - 50) * (3 / 50));
+    else currentSpeedMultiplier = 1 + (score * (2 / 50));
+}
+
+function updateHUD() {
+    document.getElementById('score-val').innerText = score;
+    document.getElementById('speed-val').innerText = `${(currentSpeedMultiplier * baseSpeed / 4).toFixed(1)}x`;
+    document.getElementById('coins-val').innerText = gameState.coins;
+    document.getElementById('best-val').innerText = gameState.bestScore;
+}
+
+function handleGameOver() {
+    isPlaying = false;
+    cancelAnimationFrame(animationFrameId);
+    clearTimeout(spawnTimerId);
+    
+    bgMusic.pause();
+
+    window.removeEventListener('keydown', handleInput);
+    window.removeEventListener('touchstart', handleInput);
+
+    let failAudio = new Audio(`sounds/${gameState.selected}.mp3`);
+    failAudio.play().catch(e => console.log("Fail sound missing"));
+
+    if (score > gameState.bestScore) {
+        gameState.bestScore = score;
+    }
+    saveGameData();
+
+    document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('gameover-screen').classList.remove('hidden');
+    document.getElementById('final-score').innerText = score;
+    document.getElementById('final-coins').innerText = coinsEarnedThisRun;
+}
+
+function restartGame() {
+    startGame();
+}
+
+function showCharacterSelection() {
+    document.getElementById('gameover-screen').classList.add('hidden');
+    document.getElementById('selection-screen').classList.remove('hidden');
+    renderCarousel();
+}
