@@ -48,14 +48,27 @@ let currentCarouselIndex = 0;
 // Preloading Image Pools targeting specific 'images/' path
 const images = {};
 function preloadAssets() {
-    images['background'] = new Image(); images['background'].src = 'images/background.png';
+
+    images.background = new Image();
+    images.background.src = "images/background.png";
+
     OBSTACLE_TYPES.forEach(obs => {
-        images[obs.id] = new Image(); images[obs.id].src = `images/${obs.id}.png`;
+
+        images[obs.id] = new Image();
+        images[obs.id].src = `images/${obs.id}.png`;
+
     });
+
     CREATORS.forEach(c => {
-        images[`${c.id}_standing`] = new Image(); images[`${c.id}_standing'].src = `images/${c.id}standing.png`;
-        images[`${c.id}_jumping`] = new Image(); images[`${c.id}_jumping'].src = `images/${c.id}jumping.png`;
+
+        images[`${c.id}_standing`] = new Image();
+        images[`${c.id}_standing`].src = `images/${c.id}standing.png`;
+
+        images[`${c.id}_jumping`] = new Image();
+        images[`${c.id}_jumping`].src = `images/${c.id}jumping.png`;
+
     });
+
 }
 
 // LocalStorage Persistence
