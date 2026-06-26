@@ -1,0 +1,421 @@
+```css
+/* ===========================================
+   TAMIL CREATOR RUNNER
+   STYLE.CSS
+=========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    user-select:none;
+}
+
+html,
+body{
+
+    width:100%;
+    height:100%;
+    overflow:hidden;
+
+    font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+    background:#111;
+}
+
+/* ==============================
+   GAME AREA
+============================== */
+
+#game{
+
+    position:relative;
+
+    width:100vw;
+    height:100vh;
+
+    overflow:hidden;
+
+    background:#89cfff;
+}
+
+/* ==============================
+   BACKGROUND
+============================== */
+
+.background{
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background-image:url("images/background.png");
+
+    background-repeat:repeat-x;
+
+    background-size:cover;
+
+    background-position:left center;
+
+    z-index:1;
+
+    will-change:transform;
+}
+
+#background2{
+
+    left:100%;
+}
+
+/* ==============================
+   GROUND
+============================== */
+
+#ground{
+
+    position:absolute;
+
+    left:0;
+    bottom:0;
+
+    width:100%;
+    height:130px;
+
+    background:transparent;
+
+    z-index:2;
+}
+
+/* ==============================
+   PLAYER
+============================== */
+
+#player{
+
+    position:absolute;
+
+    left:180px;
+
+    bottom:130px;
+
+    width:180px;
+
+    z-index:20;
+
+    pointer-events:none;
+
+    image-rendering:auto;
+}
+
+/* ==============================
+   OBSTACLES
+============================== */
+
+#obstacleContainer{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:15;
+}
+
+.obstacle{
+
+    position:absolute;
+
+    bottom:130px;
+
+    pointer-events:none;
+}
+
+/* ==============================
+   HUD
+============================== */
+
+#hud{
+
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:200;
+}
+
+#scoreBox{
+
+    position:absolute;
+
+    left:25px;
+    top:25px;
+
+    background:rgba(26,39,61,.92);
+
+    color:white;
+
+    border-radius:18px;
+
+    padding:16px 22px;
+
+    min-width:180px;
+
+    box-shadow:
+    0 8px 18px rgba(0,0,0,.25);
+}
+
+#score{
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    margin-bottom:8px;
+}
+
+#speed,
+#coins{
+
+    font-size:22px;
+
+    opacity:.95;
+}
+
+#bestBox{
+
+    position:absolute;
+
+    top:25px;
+    right:25px;
+
+    background:rgba(26,39,61,.92);
+
+    color:white;
+
+    padding:16px 22px;
+
+    border-radius:18px;
+
+    font-size:24px;
+
+    box-shadow:
+    0 8px 18px rgba(0,0,0,.25);
+}
+
+/* ==============================
+   START SCREEN
+============================== */
+
+#startScreen{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:25px;
+
+    color:white;
+
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(0,0,0,.15),
+        rgba(0,0,0,.45)
+    );
+
+    z-index:500;
+}
+
+#startScreen h1{
+
+    font-size:70px;
+
+    text-shadow:
+    0 4px 10px black;
+}
+
+#startScreen p{
+
+    font-size:28px;
+
+    opacity:.95;
+}
+
+/* ==============================
+   GAME OVER
+============================== */
+
+#gameOver{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:25px;
+
+    background:
+    rgba(0,0,0,.65);
+
+    color:white;
+
+    z-index:600;
+}
+
+#gameOver h1{
+
+    font-size:72px;
+}
+
+#gameOver h2{
+
+    font-size:34px;
+}
+
+#restartBtn{
+
+    border:none;
+
+    outline:none;
+
+    cursor:pointer;
+
+    padding:
+
+    18px 50px;
+
+    font-size:28px;
+
+    border-radius:15px;
+
+    background:#1f8fff;
+
+    color:white;
+
+    transition:.25s;
+}
+
+#restartBtn:hover{
+
+    transform:scale(1.08);
+}
+
+/* ==============================
+   CHARACTER MENU
+============================== */
+
+#characterMenu{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    linear-gradient(
+        180deg,
+        #7fd4ff,
+        #dff7ff
+    );
+
+    z-index:1000;
+}
+
+/* ==============================
+   HIDDEN
+============================== */
+
+.hidden{
+
+    display:none !important;
+}
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media(max-width:900px){
+
+#player{
+
+    width:140px;
+
+    left:70px;
+}
+
+#score{
+
+    font-size:26px;
+}
+
+#speed,
+#coins{
+
+    font-size:18px;
+}
+
+#startScreen h1{
+
+    font-size:45px;
+}
+
+#gameOver h1{
+
+    font-size:50px;
+}
+
+}
+
+/* ==============================
+   SMALL ANIMATIONS
+============================== */
+
+@keyframes pulse{
+
+0%{
+
+transform:scale(1);
+
+}
+
+50%{
+
+transform:scale(1.03);
+
+}
+
+100%{
+
+transform:scale(1);
+
+}
+
+}
+
+#restartBtn{
+
+animation:pulse 2s infinite;
+}
+```
