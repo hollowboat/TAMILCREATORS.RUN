@@ -10,54 +10,133 @@
 
     <div id="game-container">
 
+        <!-- Character Selection -->
         <div id="selection-screen" class="screen">
             <h1 class="menu-title">Select Your Creator</h1>
+
             <div class="carousel-container">
                 <button class="nav-btn left-btn" onclick="moveCarousel(-1)">&#10094;</button>
+
                 <div class="carousel-track" id="carousel-track"></div>
+
                 <button class="nav-btn right-btn" onclick="moveCarousel(1)">&#10095;</button>
             </div>
-            <button id="select-confirm-btn" class="action-btn" onclick="confirmSelection()">Select Character</button>
+
+            <button id="select-confirm-btn"
+                    class="action-btn"
+                    onclick="confirmSelection()">
+                Select Character
+            </button>
         </div>
 
+        <!-- Game Screen -->
         <div id="game-screen" class="screen hidden">
+
             <div id="hud">
                 <div class="hud-left">
-                    <div class="hud-item">Score: <span id="score-val">0</span></div>
-                    <div class="hud-item">Speed: <span id="speed-val">1.0x</span></div>
-                    <div class="hud-item">Coins: <span id="coins-val">0</span></div>
-                    <div class="hud-item">Best: <span id="best-val">0</span></div>
+                    <div class="hud-item">
+                        Score: <span id="score-val">0</span>
+                    </div>
+
+                    <div class="hud-item">
+                        Speed: <span id="speed-val">1.0x</span>
+                    </div>
+
+                    <div class="hud-item">
+                        Coins: <span id="coins-val">0</span>
+                    </div>
+
+                    <div class="hud-item">
+                        Best: <span id="best-val">0</span>
+                    </div>
                 </div>
+
                 <button id="pause-btn" onclick="togglePause()">⚙️</button>
             </div>
 
             <canvas id="gameCanvas" width="800" height="400"></canvas>
 
+            <!-- Pause Menu -->
             <div id="pause-menu" class="modal hidden">
+
                 <h2>Game Paused</h2>
+
                 <div class="control-group">
-                    <label for="speed-slider">Adjust Game Pacing Base Speed:</label>
-                    <input type="range" id="speed-slider" min="2" max="6" step="0.5" value="4" oninput="changeBaseSpeed(this.value)">
+                    <label for="speed-slider">
+                        Adjust Game Pacing Base Speed:
+                    </label>
+
+                    <input
+                        type="range"
+                        id="speed-slider"
+                        min="2"
+                        max="6"
+                        step="0.5"
+                        value="4"
+                        oninput="changeBaseSpeed(this.value)"
+                    >
+
                     <span id="slider-val">4.0</span>
                 </div>
-                <button class="action-btn" onclick="togglePause()">Resume Run</button>
+
+                <button class="action-btn" onclick="togglePause()">
+                    Resume Run
+                </button>
+
             </div>
+
         </div>
 
+        <!-- Game Over Screen -->
         <div id="gameover-screen" class="screen hidden">
+
             <h1 class="gameover-title">Game Over</h1>
+
             <div class="stats-container">
-                <p>Final Score: <span id="final-score">0</span></p>
-                <p>Coins Earned This Run: <span id="final-coins">0</span></p>
+                <p>
+                    Final Score:
+                    <span id="final-score">0</span>
+                </p>
+
+                <p>
+                    Coins Earned This Run:
+                    <span id="final-coins">0</span>
+                </p>
             </div>
+
+            <!-- Buy Me a Coffee -->
+            <div id="support-container" style="margin-top:25px;">
+                <p style="font-size:16px;">
+                    ❤️ Enjoyed the game?<br>
+                    Support the developer by buying a coffee!
+                </p>
+
+                <button
+                    id="coffee-btn"
+                    class="action-btn"
+                    onclick="buyCoffee()"
+                    style="background:#ffb300;color:#111;margin-top:10px;">
+                    ☕ Buy Me a Coffee
+                </button>
+            </div>
+
             <div class="button-group">
-                <button class="action-btn" onclick="restartGame()">Play Again</button>
-                <button class="action-btn secondary-btn" onclick="showCharacterSelection()">Change Character</button>
+                <button class="action-btn" onclick="restartGame()">
+                    Play Again
+                </button>
+
+                <button
+                    class="action-btn secondary-btn"
+                    onclick="showCharacterSelection()">
+                    Change Character
+                </button>
             </div>
+
         </div>
 
     </div>
 
     <script src="script.js"></script>
+
 </body>
 </html>
