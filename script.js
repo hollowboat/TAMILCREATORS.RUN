@@ -332,8 +332,8 @@ function gameLoop() {
 }
 
 function adjustDifficulty() {
-    if (score >= 200) currentSpeedMultiplier = 10; 
-    else if (score >= 100) currentSpeedMultiplier = 6 + ((score - 100) * (4 / 100));
+    if (score >= 200) currentSpeedMultiplier = 8; 
+    else if (score >= 100) currentSpeedMultiplier = 5 + ((score - 100) * (4 / 100));
     else if (score >= 50) currentSpeedMultiplier = 3 + ((score - 50) * (3 / 50));
     else currentSpeedMultiplier = 1 + (score * (2 / 50));
 }
