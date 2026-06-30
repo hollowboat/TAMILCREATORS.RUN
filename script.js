@@ -5,8 +5,11 @@ const CREATORS = [
     { id: 'asro', name: 'Asro', cost: 30 },
     { id: 'kabilan', name: 'Kabilan', cost: 30 },
     { id: 'stalin', name: 'Stalin', cost: 30 },
-    { id: 'd7trixx', name: 'D7Trixx', cost: 30 },
-    { id: 'rajini', name: 'Rajini', cost: 30 }
+    { id: 'd7trixx', name: 'D7trixx', cost: 30 },
+    { id: 'rajini', name: 'Rajini', cost: 30 },
+    { id: 'dhanush', name: 'Dhanush', cost: 30 },
+    { id: 'groot', name: 'Groot', cost: 30 },
+    { id: 'jishhthetics', name: 'Jishhthetics', cost: 30 }
 ];
 
 const OBSTACLE_TYPES = [
