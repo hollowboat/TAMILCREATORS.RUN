@@ -241,6 +241,25 @@ function changeBaseSpeed(val) {
 
 function spawnObstacle() {
     if (!isPlaying || isPaused) return;
+
+    // 1. Check the last obstacle in the array to ensure fair spacing
+    if (obstacles.length > 0) {
+        const lastObstacle = obstacles[obstacles.length - 1];
+        
+        // Calculate a safe pixel gap proportional to how fast the game is moving
+        // Higher speed requires a larger physical pixel gap on screen
+        const currentSpeed = baseSpeed * currentSpeedMultiplier;
+        const safeGap = player.width * 2.5 + (currentSpeed * 12); 
+        
+        // If the last obstacle hasn't cleared the safe gap distance yet, skip this spawn frame
+        if (canvas.width + 100 - lastObstacle.x < safeGap) {
+            // Re-check shortly in the next micro-timer frame
+            spawnTimerId = setTimeout(spawnObstacle, 150);
+            return;
+        }
+    }
+
+    // 2. Standard spawning block if conditions are safe
     const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
     obstacles.push({
         x: canvas.width + 100,
@@ -253,7 +272,8 @@ function spawnObstacle() {
         passed: false
     });
     
-    let nextSpawnTime = Math.random() * 2000 + (1600 / currentSpeedMultiplier);
+    // 3. Scale the random delay component gracefully so it never reaches absolute zero
+    let nextSpawnTime = Math.random() * 1500 + (2000 / (currentSpeedMultiplier * 0.75));
     spawnTimerId = setTimeout(spawnObstacle, nextSpawnTime);
 }
 
@@ -335,9 +355,9 @@ function gameLoop() {
 }
 
 function adjustDifficulty() {
-    if (score >= 200) currentSpeedMultiplier = 8; 
-    else if (score >= 100) currentSpeedMultiplier = 5 + ((score - 100) * (4 / 100));
-    else if (score >= 50) currentSpeedMultiplier = 3 + ((score - 50) * (3 / 50));
+    if (score >= 500) currentSpeedMultiplier = 10; 
+    else if (score >= 200) currentSpeedMultiplier = 5 + ((score - 100) * (4 / 100));
+    else if (score >= 100) currentSpeedMultiplier = 3 + ((score - 50) * (3 / 50));
     else currentSpeedMultiplier = 1 + (score * (2 / 50));
 }
 
